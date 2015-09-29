@@ -14,7 +14,7 @@ def parse_csv(datafile):
     with open(datafile, "rt") as file:
         r = csv.DictReader(file)
         for line in r:
-
+            print(line)
             data.append(line)
     return data
 
@@ -24,3 +24,4 @@ if __name__ == '__main__':
     print(datafile)
     d = parse_csv(datafile)
     pprint.pprint(d)
+
