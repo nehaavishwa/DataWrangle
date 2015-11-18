@@ -13,8 +13,9 @@ datafile = r"C:\Temp\2013_ERCOT_Hourly_Load_Data.xls"
 outfile = r"C:\Temp\2013_Max_Loads.csv"
 
 
+
 def open_zip(datafile):
-    with ZipFile('{0}.zip'.format(datafile), 'r') as myzip:
+    with ZipFile('{0}'.format(datafile), 'r') as myzip:
         myzip.extractall()
 
 
@@ -98,14 +99,14 @@ def parse_file(datafile):
 
     #print(maxtime_COAST)
     # YOUR CODE HERE
-    data = {'COAST': {'Max Load': maxval_coast, 'Year': max_YEAR_coast, 'Month': max_MONTH_coast, 'DAY' : max_DAY_coast, 'Hour' : max_HOUR_coast},
-             'EAST': {'Max Load': maxval_EAST, 'Year': max_YEAR_EAST, 'Month': max_MONTH_EAST, 'DAY' : max_DAY_EAST, 'Hour' : max_HOUR_EAST},
-             'FAR_WEST': {'Max Load': maxval_FAR_WEST, 'Year': max_YEAR_FAR_WEST, 'Month': max_MONTH_FAR_WEST, 'DAY' : max_DAY_FAR_WEST, 'Hour' : max_HOUR_FAR_WEST},
-             'NORTH': {'Max Load': maxval_NORTH, 'Year': max_YEAR_NORTH, 'Month': max_MONTH_NORTH, 'DAY' : max_DAY_NORTH, 'Hour' : max_HOUR_NORTH},
-             'NORTH_C': {'Max Load': maxval_NORTH_C, 'Year': max_YEAR_NORTH_C, 'Month': max_MONTH_NORTH_C, 'DAY' : max_DAY_NORTH_C, 'Hour' : max_HOUR_NORTH_C},
-             'SOUTHERN': {'Max Load': maxval_SOUTHERN, 'Year': max_YEAR_SOUTHERN, 'Month': max_MONTH_SOUTHERN, 'DAY' : max_DAY_SOUTHERN, 'Hour' : max_HOUR_SOUTHERN},
-             'SOUTH_C': {'Max Load': maxval_SOUTH_C, 'Year': max_YEAR_SOUTH_C, 'Month': max_MONTH_SOUTH_C, 'DAY' : max_DAY_SOUTH_C, 'Hour' : max_HOUR_SOUTH_C},
-             'WEST': {'Max Load': maxval_WEST, 'Year': max_YEAR_WEST, 'Month': max_MONTH_WEST, 'DAY' : max_DAY_WEST, 'Hour' : max_HOUR_WEST}
+    data = {'COAST': {'Max Load': maxval_coast, 'Year': max_YEAR_coast, 'Month': max_MONTH_coast, 'Day': max_DAY_coast, 'Hour': max_HOUR_coast},
+             'EAST': {'Max Load': maxval_EAST, 'Year': max_YEAR_EAST, 'Month': max_MONTH_EAST, 'Day': max_DAY_EAST, 'Hour': max_HOUR_EAST},
+             'FAR_WEST': {'Max Load': maxval_FAR_WEST, 'Year': max_YEAR_FAR_WEST, 'Month': max_MONTH_FAR_WEST, 'Day': max_DAY_FAR_WEST, 'Hour': max_HOUR_FAR_WEST},
+             'NORTH': {'Max Load': maxval_NORTH, 'Year': max_YEAR_NORTH, 'Month': max_MONTH_NORTH, 'Day': max_DAY_NORTH, 'Hour': max_HOUR_NORTH},
+             'NORTH_C': {'Max Load': maxval_NORTH_C, 'Year': max_YEAR_NORTH_C, 'Month': max_MONTH_NORTH_C, 'Day': max_DAY_NORTH_C, 'Hour': max_HOUR_NORTH_C},
+             'SOUTHERN': {'Max Load': maxval_SOUTHERN, 'Year': max_YEAR_SOUTHERN, 'Month': max_MONTH_SOUTHERN, 'Day': max_DAY_SOUTHERN, 'Hour': max_HOUR_SOUTHERN},
+             'SOUTH_C': {'Max Load': maxval_SOUTH_C, 'Year': max_YEAR_SOUTH_C, 'Month': max_MONTH_SOUTH_C, 'Day': max_DAY_SOUTH_C, 'Hour': max_HOUR_SOUTH_C},
+             'WEST': {'Max Load': maxval_WEST, 'Year': max_YEAR_WEST, 'Month': max_MONTH_WEST, 'Day': max_DAY_WEST, 'Hour': max_HOUR_WEST}
             }
     # Remember that you can use xlrd.xldate_as_tuple(sometime, 0) to convert
     # Excel date to Python tuple of (year, month, day, hour, minute, second)
@@ -114,11 +115,22 @@ def parse_file(datafile):
 
 def save_file(data, filename):
     # YOUR CODE HERE
-    print(data)
+
+    with open(filename, 'w') as csvfile:
+        fieldnames = ['Station', 'Year', 'Month', 'Day', 'Hour', 'Max Load']
+        writer = csv.DictWriter(csvfile, delimiter='|', fieldnames=fieldnames)
+        writer.writeheader()
+        for d in data:
+            print(d, data[d], data[d]['Hour'])
+            writer.writerow({'Station': d, 'Year': data[d]['Year'], 'Month': data[d]['Month'], 'Day': data[d]['Day'], 'Hour': data[d]['Hour'], 'Max Load': data[d]['Max Load']})
+
+
+
+
 
     
 def test():
-    open_zip(datafile)
+    #open_zip(datafile)
     data = parse_file(datafile)
     save_file(data, outfile)
 
@@ -136,10 +148,15 @@ def test():
 
     with open(outfile) as of:
         csvfile = csv.DictReader(of, delimiter="|")
+
         for line in csvfile:
+            print(line)
             station = line['Station']
+            print(station)
             if station == 'FAR_WEST':
+                print(station)
                 for field in fields:
+                    print(field)
                     # Check if 'Max Load' is within .1 of answer
                     if field == 'Max Load':
                         max_answer = round(float(ans[station][field]), 1)
@@ -148,22 +165,22 @@ def test():
 
                     # Otherwise check for equality
                     else:
-                        print("STATION FIELD", ans[station][field], "LINE FIELD", line[field])
+                        print("STATION FIELD",station, field, ans[station][field], "LINE FIELD", line[field])
                         assert ans[station][field] == line[field]
 
             number_of_rows += 1
             stations.append(station)
 
         # Output should be 8 lines not including header
+        print(number_of_rows)
         assert number_of_rows == 8
 
         # Check Station Names
         assert set(stations) == set(correct_stations)
 
-
         
 if __name__ == "__main__":
-    #test()
-    data = parse_file(datafile)
-    save_file(data, outfile)
+    test()
+    #data = parse_file(datafile)
+    #save_file(data, outfile)
 
