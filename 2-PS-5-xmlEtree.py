@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # So, the problem is that the gigantic file is actually not a valid XML, because
